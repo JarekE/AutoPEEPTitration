@@ -2,4 +2,3 @@
 
 def rnn(data):
     ...
-    return
