@@ -24,8 +24,8 @@ def create_data(set, name):
         width = 2
     # TODO: Entscheiden welche Merkmale wirklich wichtig sein könnten (zB durch KNN etc) --> Kann noch warten!
     elif config.model == "SimpleNN":
-        data_set = set[["p_peep", "p_pip", "p_plat", "P_et_CO2", "R_rs_est", "C_rs_est"]].to_numpy()
-        width = 6
+        data_set = set[["p_peep", "C_rs_eve", "R_rs_eve", "R_rs_est", "C_rs_est"]].to_numpy()
+        width = 5
 
     #numpy arrays with the number of breathes X per peep step
         peep = 23
@@ -41,7 +41,7 @@ def create_data(set, name):
         target = target_vector(list, length, width)
         data = np.concatenate((list[0], list[1], list[2], list[3], list[4], list[5], list[6], list[7], list[8], list[9]))
 
-    return data, target
+    return data[:,1:4], target
 
 
 def target_vector(list, length, width):
