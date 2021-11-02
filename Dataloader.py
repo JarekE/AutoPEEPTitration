@@ -3,7 +3,7 @@ import pandas as pd
 import os
 from os import listdir
 
-# TODO: Jeden Datensatz so bereinigen, dass nur noch die Daten gespeichert sind, welche wir brauchen ()
+# TODO: Jeden Datensatz so bereinigen, dass nur noch die Daten gespeichert sind, welche wir brauchen
 # zB nur noch die ersten 20 Atemzüge eines PEEP-Sprungs mit den C_rs_est Daten (oder was halt sinnvoll ist)
 def clear_data(set):
 
