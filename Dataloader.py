@@ -2,8 +2,8 @@
 import pandas as pd
 import os
 from os import listdir
-import config
 import numpy as np
+import config
 
 """
 
@@ -11,6 +11,18 @@ Idee:
 2 Ansätze: Einmal mit allen Daten und einem NN, das andere ein RNN mit den C Daten
 
 """
+
+
+def gradient_c(data):
+
+    #Array of C_rs_est
+    c_array = data[:,-1]
+
+    grad_array = np.subtract(c_array[1:], c_array[0:-1]) / c_array[0:-1]
+    #Otherwith wrong length
+    grad_array = np.append(grad_array, grad_array[-1])
+
+    return np.expand_dims(grad_array, axis=1)
 
 
 def create_data(set, name):
@@ -22,8 +34,10 @@ def create_data(set, name):
     if config.model == "RNN":
         data_set = set[["p_peep", "C_rs_est"]].to_numpy()
         width = 2
+
     # TODO: Entscheiden welche Merkmale wirklich wichtig sein könnten (zB durch KNN etc) --> Kann noch warten!
-    elif config.model == "SimpleNN":
+    elif config.model == "SimpleNN" or config.model == "Philip":
+        #C_rs_est has to be the last datapoint! (--> gradient_c() )
         data_set = set[["p_peep", "C_rs_eve", "R_rs_eve", "R_rs_est", "C_rs_est"]].to_numpy()
         width = 5
 
@@ -41,7 +55,16 @@ def create_data(set, name):
         target = target_vector(list, length, width)
         data = np.concatenate((list[0], list[1], list[2], list[3], list[4], list[5], list[6], list[7], list[8], list[9]))
 
-    return data[:,1:4], target
+        if config.grad:
+            #Now, the gradient is the last datapoint
+            data = np.concatenate((data, gradient_c(data)), axis=1)
+
+        if config.model == "Philip":
+            if config.grad != True:
+                raise Exception("Turn On (True) the gradient in .config")
+            data = data[:, -1]
+
+    return data, target
 
 
 def target_vector(list, length, width):
