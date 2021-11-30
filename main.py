@@ -13,6 +13,8 @@ def main():
         rnn(data_list, target_list)
     elif config.model == "SimpleNN":
         neuralnetwork(data_list, target_list)
+    elif config.model == "Philip":
+        neuralnetwork(data_list, target_list)
     elif config.model == "LSTM":
         lstm(data_list, target_list)
     else:

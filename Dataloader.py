@@ -2,8 +2,9 @@
 import pandas as pd
 import os
 from os import listdir
-import config
 import numpy as np
+import config
+import matplotlib.pyplot as plt
 
 """
 
@@ -11,6 +12,18 @@ Idee:
 2 Ansätze: Einmal mit allen Daten und einem NN, das andere ein RNN mit den C Daten
 
 """
+
+
+def gradient_c(data):
+
+    #Array of C_rs_est
+    c_array = data[:,-1]
+
+    grad_array = np.subtract(c_array[1:], c_array[0:-1]) / c_array[0:-1]
+    #Otherwith wrong length
+    grad_array = np.append(grad_array, grad_array[-1])
+
+    return np.expand_dims(grad_array, axis=1)
 
 
 def create_data(set, name):
@@ -35,9 +48,10 @@ def create_data(set, name):
 
         target = target_vector(list, length, width)
         data = np.concatenate((list[0], list[1], list[2], list[3], list[4], list[5], list[6], list[7], list[8], list[9]))
-        
+
     # TODO: Entscheiden welche Merkmale wirklich wichtig sein könnten (zB durch KNN etc) --> Kann noch warten!
-    elif config.model == "SimpleNN":
+    elif config.model == "SimpleNN" or config.model == "Philip":
+        #C_rs_est has to be the last datapoint! (--> gradient_c() )
         data_set = set[["p_peep", "C_rs_eve", "R_rs_eve", "R_rs_est", "C_rs_est"]].to_numpy()
         width = 5
 
@@ -90,5 +104,17 @@ def loader():
         data, target = create_data(pd.read_csv(filepath_or_buffer=path), name)
         data_list.append(data)
         target_list.append(target)
+    
+    for i in range(len(data_list)):
+        plt.figure(i+1)
+        if config.model == "RNN" or config.model == "LSTM":
+            [a, b] = plt.plot(data_list[i])
+            [c] = plt.plot(target_list[i])
+            plt.legend([a,b,c], ['p_peep', 'C_rs_eve', 'one_hot_encoding'])
+        elif config.model == "SimpleNN" or config.model == "Philip":
+            [a, b, c, d, e] = plt.plot(data_list[i])
+            [f] = plt.plot(target_list[i])
+            plt.legend([a,b,c,d,e,f], ['p_peep', 'C_rs_eve', 'R_rs_eve', 'R_rs_est', 'C_rs_est', 'classification'])
+        plt.show()
 
     return data_list, target_list

@@ -5,20 +5,33 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from torch import nn, optim
 import torch.nn.functional as F
+import config
 
 
 class Net(nn.Module):
 
   def __init__(self, n_features):
     super(Net, self).__init__()
-    self.fc1 = nn.Linear(n_features, 5)
-    self.fc2 = nn.Linear(5, 3)
-    self.fc3 = nn.Linear(3, 1)
+    #Network
+    if config.model == "SimpleNN":
+        self.fc1 = nn.Linear(n_features, 5)
+        self.fc2 = nn.Linear(5, 3)
+        self.fc3 = nn.Linear(3, 1)
+
+    #PhilipNetwork
+    if config.model == "Philip":
+        self.fc1 = nn.Linear(n_features, 1)
+
 
   def forward(self, x):
-    x = F.relu(self.fc1(x))
-    x = F.relu(self.fc2(x))
-    return torch.sigmoid(self.fc3(x))
+    if config.model == "SimpleNN":
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        return torch.sigmoid(self.fc3(x))
+
+    if config.model == "Philip":
+        return torch.sigmoid(self.fc1(x))
+
 
 def calculate_accuracy(y_true, y_pred):
   predicted = y_pred.ge(.5).view(-1)
@@ -38,15 +51,23 @@ def neuralnetwork(data, target):
     y_train = torch.squeeze(torch.from_numpy(y_train).float())
     X_test = torch.from_numpy(X_test).float()
     y_test = torch.squeeze(torch.from_numpy(y_test).float())
+
+    if config.model == "Philip":
+        X_train = torch.unsqueeze(X_train, 1)
+        X_test = torch.unsqueeze(X_test, 1)
+
     #test
     print(X_train.shape, y_train.shape)
     print(X_test.shape, y_test.shape)
 
-    net = Net(X_train.shape[1])
+    if config.model == "SimpleNN":
+        net = Net(X_train.shape[1])
+    if config.model == "Philip":
+        net = Net(n_features=1)
     criterion = nn.BCELoss()
     optimizer = optim.Adam(net.parameters(), lr=0.001)
 
-    for epoch in range(10000):
+    for epoch in range(config.epoch_number):
 
         y_pred = net(X_train)
 
