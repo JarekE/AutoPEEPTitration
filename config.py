@@ -13,4 +13,3 @@ epoch_number = 10000
 
 # calculate the gradient and use it
 grad = True
-
