@@ -2,7 +2,7 @@
 
 #System
 
-model = "SimpleNN" #RNN oder SimpleNN
+model = "LSTM" #RNN oder SimpleNN oder LSTM
 
 #User
 

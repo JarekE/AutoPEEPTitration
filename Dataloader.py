@@ -19,9 +19,23 @@ def create_data(set, name):
     # control variable
     name = name
 
-    if config.model == "RNN":
+    if config.model == "RNN" or config.model == "LSTM":
         data_set = set[["p_peep", "C_rs_est"]].to_numpy()
         width = 2
+
+        peep = 23
+        list = []
+        while peep >= 5:
+            data = data_set[(data_set[..., 0] > peep) & (data_set[..., 0] < (peep+2))].astype(np.float16)
+            array = np.empty([length, width], np.float16)
+            for x in range(0, length):
+                array[x, :] = data[x, :]
+            list.append(array)
+            peep = peep-2
+
+        target = target_vector(list, length, width)
+        data = np.concatenate((list[0], list[1], list[2], list[3], list[4], list[5], list[6], list[7], list[8], list[9]))
+        
     # TODO: Entscheiden welche Merkmale wirklich wichtig sein könnten (zB durch KNN etc) --> Kann noch warten!
     elif config.model == "SimpleNN":
         data_set = set[["p_peep", "C_rs_eve", "R_rs_eve", "R_rs_est", "C_rs_est"]].to_numpy()
@@ -72,7 +86,7 @@ def loader():
     filenames = find_csv_filenames("breath_data_optimal")
 
     for name in filenames:
-        path = os.path.join("breath_data", name)
+        path = os.path.join("breath_data_optimal", name)
         data, target = create_data(pd.read_csv(filepath_or_buffer=path), name)
         data_list.append(data)
         target_list.append(target)
