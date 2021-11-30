@@ -4,23 +4,17 @@ import os
 from os import listdir
 import numpy as np
 import config
-
-"""
-
-Idee:
-2 Ansätze: Einmal mit allen Daten und einem NN, das andere ein RNN mit den C Daten
-
-"""
+import matplotlib.pyplot as plt
 
 
-def gradient_c(data):
+def gradient_c(median_step):
 
-    #Array of C_rs_est
-    c_array = data[:,-1]
+    length = len(median_step) * config.length
+    grad_array = np.zeros(length)
 
-    grad_array = np.subtract(c_array[1:], c_array[0:-1]) / c_array[0:-1]
-    #Otherwith wrong length
-    grad_array = np.append(grad_array, grad_array[-1])
+    for x in range(1,len(median_step)):
+        grad_array[x*config.length:x*config.length+config.length] = (median_step[x]-median_step[x-1])/median_step[x-1]
+    grad_array[0:config.length] = grad_array[config.length:2*config.length]
 
     return np.expand_dims(grad_array, axis=1)
 
@@ -52,12 +46,19 @@ def create_data(set, name):
             list.append(array)
             peep = peep-2
 
+
         target = target_vector(list, length, width)
         data = np.concatenate((list[0], list[1], list[2], list[3], list[4], list[5], list[6], list[7], list[8], list[9]))
 
         if config.grad:
+            # calculate the median c_rs_est per step
+            median_step = []
+            for step in range(len(list)):
+                calc = np.median(list[step][:, -1])
+                median_step.append(calc)
+
             #Now the gradient is the last datapoint
-            data = np.concatenate((data, gradient_c(data)), axis=1)
+            data = np.concatenate((data, gradient_c(median_step)), axis=1)
 
         if config.model == "Philip":
             if config.grad != True:
@@ -99,5 +100,23 @@ def loader():
         data, target = create_data(pd.read_csv(filepath_or_buffer=path), name)
         data_list.append(data)
         target_list.append(target)
+
+    #My little plot function -> more information about each graph
+    for i in range(len(data_list)):
+        plt.figure(i + 1)
+        if config.model == "RNN" or config.model == "LSTM":
+            [a, b] = plt.plot(data_list[i])
+            [c] = plt.plot(target_list[i])
+            plt.legend([a, b, c], ['p_peep', 'C_rs_eve', 'one_hot_encoding'])
+        elif config.model == "SimpleNN":
+            [a, b, c, d, e] = plt.plot(data_list[i])
+            [f] = plt.plot(target_list[i])
+            plt.legend([a, b, c, d, e, f], ['p_peep', 'C_rs_eve', 'R_rs_eve', 'R_rs_est', 'C_rs_est', 'one_hot_encoding'])
+        elif config.model == "Philip":
+            [a] = plt.plot(data_list[i])
+            [b] = plt.plot(target_list[i])
+            plt.legend([a,b], ['gradient', 'one_hot_encoding'])
+
+        plt.show()
 
     return data_list, target_list

@@ -2,8 +2,8 @@
 from Dataloader import loader
 from RNNModel import rnn
 import config
-#from SimpleNN import neuralnetwork
-from LSTMmodel import lstm
+from SimpleNN import neuralnetwork
+#from LSTMmodel import lstm
 
 def main():
 
@@ -15,8 +15,8 @@ def main():
         neuralnetwork(data_list, target_list)
     elif config.model == "Philip":
         neuralnetwork(data_list, target_list)
-    elif config.model == "LSTM":
-        lstm(data_list, target_list)
+    #elif config.model == "LSTM":
+    #    lstm(data_list, target_list)
     else:
         raise Exception("Wrong model")
 

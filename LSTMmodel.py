@@ -1,3 +1,5 @@
+
+"""
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
@@ -15,6 +17,8 @@ from sklearn.model_selection import train_test_split
 #Hyperparameters
 epochs = 3
 batch_size = 32
+"""
+
 
 """
 def create_dataset(dataset, look_back=1):
@@ -61,7 +65,8 @@ loss_function = BinaryCrossentropy()
 
 model.compile(loss=loss_function, optimizer='adam', metrics=['accuracy'])
 model.fit(trainX, trainY, epochs=epochs, batch_size=batch_size)
-"""
+
+
 def lstm(data, target):
 
 	data = np.concatenate(data, axis=0 )
@@ -74,7 +79,6 @@ def lstm(data, target):
 	print(X_train)
 	print(y_train)
 
-	"""
 	model = Sequential()
 	model.add(LSTM(32, input_shape=(X_train.shape), activation = 'relu', return_sequences = True))
 	model.add(Dropout(0.2))
@@ -88,11 +92,10 @@ def lstm(data, target):
 
 	model.compile(loss=loss_function, optimizer='adam', metrics=['accuracy'])
 	model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size)
-	"""
+	
 	return
+	
 
-
-"""
 breath_data = read_csv("C:/Users/inesg/Documents/Uni/Master/Seminar/breath_data/190114_peep_tit_1.csv")
 compliance_data = breath_data.iloc[:, 16:17].values
 
@@ -143,9 +146,8 @@ plt.xlabel('Date')
 plt.ylabel('Apple Stock Price')
 plt.legend()
 plt.show()
-"""
 
-"""
+
 def create_data(set, name):
 	data_set = set[["p_peep", "C_rs_est"]].to_numpy()
 	width = 2
