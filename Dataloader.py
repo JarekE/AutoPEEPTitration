@@ -56,7 +56,7 @@ def create_data(set, name):
         data = np.concatenate((list[0], list[1], list[2], list[3], list[4], list[5], list[6], list[7], list[8], list[9]))
 
         if config.grad:
-            #Now, the gradient is the last datapoint
+            #Now the gradient is the last datapoint
             data = np.concatenate((data, gradient_c(data)), axis=1)
 
         if config.model == "Philip":
@@ -95,7 +95,7 @@ def loader():
     filenames = find_csv_filenames("breath_data_optimal")
 
     for name in filenames:
-        path = os.path.join("breath_data", name)
+        path = os.path.join("breath_data_optimal", name)
         data, target = create_data(pd.read_csv(filepath_or_buffer=path), name)
         data_list.append(data)
         target_list.append(target)

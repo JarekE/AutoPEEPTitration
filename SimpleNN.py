@@ -54,9 +54,7 @@ def neuralnetwork(data, target):
 
     if config.model == "Philip":
         X_train = torch.unsqueeze(X_train, 1)
-        #y_train = torch.unsqueeze(y_train, 1)
         X_test = torch.unsqueeze(X_test, 1)
-        #y_test = torch.unsqueeze(y_test, 1)
 
     #test
     print(X_train.shape, y_train.shape)
@@ -69,7 +67,7 @@ def neuralnetwork(data, target):
     criterion = nn.BCELoss()
     optimizer = optim.Adam(net.parameters(), lr=0.001)
 
-    for epoch in range(10000):
+    for epoch in range(config.epoch_number):
 
         y_pred = net(X_train)
 
