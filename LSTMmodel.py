@@ -69,12 +69,12 @@ def lstm(data, target):
 
 	X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=42)
 
-	#print(X_train.shape)
-	#print(y_train.shape)
+	print(X_train.shape)
+	print(y_train.shape)
 	print(X_train)
 	print(y_train)
 
-	"""
+	
 	model = Sequential()
 	model.add(LSTM(32, input_shape=(X_train.shape), activation = 'relu', return_sequences = True))
 	model.add(Dropout(0.2))
@@ -88,7 +88,7 @@ def lstm(data, target):
 
 	model.compile(loss=loss_function, optimizer='adam', metrics=['accuracy'])
 	model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size)
-	"""
+	
 	return
 
 
