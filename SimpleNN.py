@@ -14,8 +14,8 @@ class Net(nn.Module):
     super(Net, self).__init__()
     #Network
     if config.model == "SimpleNN":
-        self.fc1 = nn.Linear(n_features, 5)
-        self.fc2 = nn.Linear(5, 3)
+        self.fc1 = nn.Linear(n_features, 6)
+        self.fc2 = nn.Linear(6, 3)
         self.fc3 = nn.Linear(3, 1)
 
     #PhilipNetwork
@@ -45,7 +45,7 @@ def neuralnetwork(data, target):
     data = np.concatenate(data, axis=0 )
     target = np.concatenate(target, axis=0 )
 
-    X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(data, target, shuffle=True, test_size=0.1)
 
     X_train = torch.from_numpy(X_train).float()
     y_train = torch.squeeze(torch.from_numpy(y_train).float())
@@ -65,7 +65,7 @@ def neuralnetwork(data, target):
     if config.model == "Philip":
         net = Net(n_features=1)
     criterion = nn.BCELoss()
-    optimizer = optim.Adam(net.parameters(), lr=0.001)
+    optimizer = optim.Adam(net.parameters(), lr=0.005)
 
     for epoch in range(config.epoch_number):
 

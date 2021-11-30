@@ -32,8 +32,8 @@ def create_data(set, name):
     # TODO: Entscheiden welche Merkmale wirklich wichtig sein könnten (zB durch KNN etc) --> Kann noch warten!
     elif config.model == "SimpleNN" or config.model == "Philip":
         #C_rs_est has to be the last datapoint! (--> gradient_c() )
-        data_set = set[["p_peep", "C_rs_eve", "R_rs_eve", "R_rs_est", "C_rs_est"]].to_numpy()
-        width = 5
+        data_set = set[["p_peep", "C_rs_eve", "C_rs_est"]].to_numpy()
+        width = 3
 
     #numpy arrays with the number of breathes X per peep step
         peep = 23
@@ -102,21 +102,22 @@ def loader():
         target_list.append(target)
 
     #My little plot function -> more information about each graph
-    for i in range(len(data_list)):
-        plt.figure(i + 1)
-        if config.model == "RNN" or config.model == "LSTM":
-            [a, b] = plt.plot(data_list[i])
-            [c] = plt.plot(target_list[i])
-            plt.legend([a, b, c], ['p_peep', 'C_rs_eve', 'one_hot_encoding'])
-        elif config.model == "SimpleNN":
-            [a, b, c, d, e] = plt.plot(data_list[i])
-            [f] = plt.plot(target_list[i])
-            plt.legend([a, b, c, d, e, f], ['p_peep', 'C_rs_eve', 'R_rs_eve', 'R_rs_est', 'C_rs_est', 'one_hot_encoding'])
-        elif config.model == "Philip":
-            [a] = plt.plot(data_list[i])
-            [b] = plt.plot(target_list[i])
-            plt.legend([a,b], ['gradient', 'one_hot_encoding'])
+    if config.print == True:
+        for i in range(len(data_list)):
+            plt.figure(i + 1)
+            if config.model == "RNN" or config.model == "LSTM":
+                [a, b] = plt.plot(data_list[i])
+                [c] = plt.plot(target_list[i])
+                plt.legend([a, b, c], ['p_peep', 'C_rs_eve', 'one_hot_encoding'])
+            elif config.model == "SimpleNN":
+                [a, b, c, d] = plt.plot(data_list[i])
+                [e] = plt.plot(target_list[i])
+                plt.legend([a, b, c, d, e], ['p_peep', 'C_rs_eve', 'C_rs_est', 'gradient', 'one_hot_encoding'])
+            elif config.model == "Philip":
+                [a] = plt.plot(data_list[i])
+                [b] = plt.plot(target_list[i])
+                plt.legend([a, b], ['gradient', 'one_hot_encoding'])
 
-        plt.show()
+            plt.show()
 
     return data_list, target_list
