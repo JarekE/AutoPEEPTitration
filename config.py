@@ -2,7 +2,7 @@
 
 #System
 
-model = "Philip" #RNN oder SimpleNN oder Philip
+model = "Philip" #RNN oder SimpleNN oder Philip...
 
 #User
 
