@@ -5,6 +5,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from torch import nn, optim
 import torch.nn.functional as F
+import matplotlib.pyplot as plt
+import sys
+
 import config
 
 
@@ -37,69 +40,119 @@ def calculate_accuracy(y_true, y_pred):
   predicted = y_pred.ge(.5).view(-1)
   return (y_true == predicted).sum().float() / len(y_true)
 
+
 def round_tensor(t, decimal_places=3):
     return round(t.item(), decimal_places)
 
+
+def loss_plot(train, test):
+
+    plt.plot(train, '-b', label='train_loss')
+    plt.plot(test, '-r', label='val_loss')
+
+    plt.xlabel("n iteration")
+    plt.legend(loc='upper right')
+    plt.title('Loss')
+
+    plt.show()
+
+
 def neuralnetwork(data, target):
 
+    #data
     data = np.concatenate(data, axis=0 )
     target = np.concatenate(target, axis=0 )
 
-    X_train, X_test, y_train, y_test = train_test_split(data, target, shuffle=True, test_size=0.1)
+    X_train, X_test, y_train, y_test = train_test_split(data, target, random_state=config.random_state, shuffle=True, test_size=1 - config.train_ratio)
+    X_val, X_test, y_val, y_test = train_test_split(X_test, y_test, test_size=config.test_ratio / (config.test_ratio + config.validation_ratio))
 
     X_train = torch.from_numpy(X_train).float()
     y_train = torch.squeeze(torch.from_numpy(y_train).float())
     X_test = torch.from_numpy(X_test).float()
     y_test = torch.squeeze(torch.from_numpy(y_test).float())
+    X_val = torch.from_numpy(X_val).float()
+    y_val = torch.squeeze(torch.from_numpy(y_val).float())
 
     if config.model == "Philip":
         X_train = torch.unsqueeze(X_train, 1)
         X_test = torch.unsqueeze(X_test, 1)
+        X_val = torch.unsqueeze(X_test, 1)
 
     #test
     print(X_train.shape, y_train.shape)
     print(X_test.shape, y_test.shape)
+    print(X_val.shape, y_val.shape)
 
     if config.model == "SimpleNN":
         net = Net(X_train.shape[1])
     if config.model == "Philip":
         net = Net(n_features=1)
     criterion = nn.BCELoss()
-    optimizer = optim.Adam(net.parameters(), lr=0.005)
+    optimizer = optim.Adam(net.parameters(), lr=config.learning_rate)
 
-    for epoch in range(config.epoch_number):
 
-        y_pred = net(X_train)
+    if config.test == False:
+        # training
+        train = []
+        val = []
+        for epoch in range(config.epoch_number):
 
-        y_pred = torch.squeeze(y_pred)
-        train_loss = criterion(y_pred, y_train)
+            # training
+            y_pred = net(X_train)
+            y_pred = torch.squeeze(y_pred)
+            train_loss = criterion(y_pred, y_train)
 
-        if epoch % 100 == 0:
-            train_acc = calculate_accuracy(y_train, y_pred)
+            # validation
+            y_val_pred = net(X_val)
+            y_val_pred = torch.squeeze(y_val_pred)
+            val_loss = criterion(y_val_pred, y_val)
 
-            y_test_pred = net(X_test)
-            y_test_pred = torch.squeeze(y_test_pred)
+            if config.loss_plot == True:
+                train.append(train_loss)
+                val.append(val_loss)
 
-            test_loss = criterion(y_test_pred, y_test)
+                if epoch % (config.epoch_number/10) == 0:
+                    loss_plot(train, val)
 
-            test_acc = calculate_accuracy(y_test, y_test_pred)
-            print(f'''epoch {epoch}
-            Train set - loss: {round_tensor(train_loss)}, accuracy: {round_tensor(train_acc)}
-            Test  set - loss: {round_tensor(test_loss)}, accuracy: {round_tensor(test_acc)}
-            ''')
 
-        optimizer.zero_grad()
-        train_loss.backward()
-        optimizer.step()
+            if epoch % 100 == 0:
 
-    MODEL_PATH = 'model.pth'
-    torch.save(net, MODEL_PATH)
+                train_acc = calculate_accuracy(y_train, y_pred)
+                val_acc = calculate_accuracy(y_val, y_val_pred)
 
-    classes = ['No Optimum', 'Optimum']
-    y_pred = net(X_test)
-    y_pred = y_pred.ge(.5).view(-1).cpu()
-    y_test = y_test.cpu()
+                print(f'''epoch {epoch}
+                Train set - loss: {round_tensor(train_loss)}, accuracy: {round_tensor(train_acc)}
+                Val  set  - loss: {round_tensor(val_loss)}, accuracy: {round_tensor(val_acc)}
+                ''')
 
-    print(classification_report(y_test, y_pred, target_names=classes))
+            optimizer.zero_grad()
+            train_loss.backward()
+            optimizer.step()
+
+        MODEL_PATH = 'model.pth'
+        torch.save(net, MODEL_PATH)
+
+        # testing (of trained model)
+        classes = ['No Optimum', 'Optimum PEEP']
+        y_pred = net(X_test)
+        y_pred = y_pred.ge(.5).view(-1).cpu()
+        y_test = y_test.cpu()
+
+        if config.report == True:
+            sys.stdout = open("classification_report.txt", "w")
+            print(classification_report(y_test, y_pred, target_names=classes))
+            sys.stdout.close()
+        else:
+            print(classification_report(y_test, y_pred, target_names=classes))
+
+    else:
+        net = torch.load('model.pth')
+
+        classes = ['No Optimum', 'Optimum PEEP']
+        y_pred = net(X_test)
+        y_pred = y_pred.ge(.5).view(-1).cpu()
+        y_test = y_test.cpu()
+
+        print(classification_report(y_test, y_pred, target_names=classes))
 
     return
