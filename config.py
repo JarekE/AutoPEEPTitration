@@ -2,7 +2,7 @@
 
 #System
 
-model = "Philip" #RNN oder SimpleNN oder Philip
+model = "SVM" #RNN oder SimpleNN oder Philip oder LSTM oder SVM
 
 #User
 
@@ -13,3 +13,6 @@ epoch_number = 10000
 
 # calculate the gradient and use it
 grad = True
+
+# plot the data with the classes
+print = False
