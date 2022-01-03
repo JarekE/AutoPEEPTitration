@@ -2,7 +2,7 @@
 
 #System
 
-model = "SVM" #RNN oder SimpleNN oder Philip oder LSTM oder SVM
+model = "kNN" #RNN oder SimpleNN oder Philip oder LSTM oder SVM
 
 #User
 
