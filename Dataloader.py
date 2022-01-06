@@ -29,11 +29,14 @@ def create_data(set, name):
     if config.model == "RNN":
         data_set = set[["p_peep", "C_rs_est"]].to_numpy()
         width = 2
-
-    elif config.model == "SimpleNN" or config.model == "Philip":
+    elif config.model == "SimpleNN" or config.model == "Philip" or config.model == "kNN" or config.model == "SVM":
         #C_rs_est has to be the last datapoint! (--> gradient_c() )
-        data_set = set[["p_peep", "C_rs_eve", "C_rs_est"]].to_numpy()
-        width = 3
+        if config.compare == True or config.model == "SVM":
+            data_set = set[["p_peep", "C_rs_est"]].to_numpy()
+            width = 2
+        else:
+            data_set = set[["p_peep", "C_rs_eve", "C_rs_est"]].to_numpy()
+            width = 3
 
         # since all stairs begin with peep = 24 --> can be generalized if necessary
         peep = 23
@@ -63,7 +66,7 @@ def create_data(set, name):
         data = np.vstack(list)
         target = target_vector(list, length, number_of_steps)
 
-        if config.grad:
+        if config.grad == True and config.compare == False:
             # calculate the median c_rs_est per step
             median_step = []
             for step in range(len(list)):
@@ -127,6 +130,7 @@ def loader():
                 [b] = plt.plot(target_list[i])
                 plt.legend([a, b], ['gradient', 'one_hot_encoding'])
 
+            #plt.savefig('plot'+str(i+1)+'.png') if you want to save the plots
             plt.show()
 
     return data_list, target_list
