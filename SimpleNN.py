@@ -54,6 +54,7 @@ def loss_plot(train, test):
     plt.legend(loc='upper right')
     plt.title('Loss')
 
+    plt.savefig('loss_plot.png')
     plt.show()
 
 
