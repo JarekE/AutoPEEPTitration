@@ -7,10 +7,13 @@ from SVMmodel import svm
 from KNNmodel import kNN
 from Compare_ML_Classifiers import comp_clf
 
+
 def main():
 
+    # load data
     data_list, target_list = loader()
 
+    # use data
     if config.compare == True:
         comp_clf(data_list, target_list)
         return
@@ -27,6 +30,7 @@ def main():
         raise Exception("Wrong model")
 
     return
+
 
 if __name__ == '__main__':
 

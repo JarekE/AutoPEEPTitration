@@ -15,13 +15,13 @@ class Net(nn.Module):
 
   def __init__(self, n_features):
     super(Net, self).__init__()
-    #Network
+    # Network
     if config.model == "SimpleNN":
         self.fc1 = nn.Linear(n_features, 6)
         self.fc2 = nn.Linear(6, 3)
         self.fc3 = nn.Linear(3, 1)
 
-    #PhilipNetwork
+    # PhilipNetwork
     if config.model == "Philip":
         self.fc1 = nn.Linear(n_features, 1)
 
@@ -60,7 +60,7 @@ def loss_plot(train, test):
 
 def neuralnetwork(data, target):
 
-    #data
+    # data
     data = np.concatenate(data, axis=0 )
     target = np.concatenate(target, axis=0 )
 
@@ -79,11 +79,12 @@ def neuralnetwork(data, target):
         X_test = torch.unsqueeze(X_test, 1)
         X_val = torch.unsqueeze(X_test, 1)
 
-    #test
+    # test
     print(X_train.shape, y_train.shape)
     print(X_test.shape, y_test.shape)
     print(X_val.shape, y_val.shape)
 
+    # choose network
     if config.model == "SimpleNN":
         net = Net(X_train.shape[1])
     if config.model == "Philip":

@@ -7,6 +7,7 @@ import config
 import matplotlib.pyplot as plt
 
 
+# calculate the gradient of the compliance
 def gradient_c(median_step):
 
     length = len(median_step) * config.length

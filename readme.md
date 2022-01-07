@@ -32,7 +32,7 @@ Dataloading consists of 4 basic steps.
 
 - The data is loaded from the provided .csv files in a given folder.
 - The data is truncated and standardised with a selectable number of breaths per PEEP step.
-- A gradient is calculated for each PEEP step.
+- The gradient of the compliance is calculated for each PEEP step.
 - A target vector is created using one-hot encoding, where a 1 represents the records belonging to the optimal PEEP step 
 (in terms of compliance).
 
