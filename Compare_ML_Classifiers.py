@@ -7,18 +7,11 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 import numpy as np
-from sklearn.model_selection import train_test_split
 from sklearn import metrics
 import config
 
 
-def comp_clf(data, target):
-    data = np.concatenate(data, axis=0)
-    target = np.concatenate(target, axis=0)
-
-    # Load and split data
-    X_train, X_test, y_train, y_test = train_test_split(
-        data, target, test_size=0.2, random_state=42, shuffle=True)
+def comp_clf(X_test, y_test, X_val, y_val, X_train, y_train):
 
     # Initializing Classifiers
     clf1 = KNeighborsClassifier(n_neighbors=15, weights='uniform')
@@ -37,7 +30,7 @@ def comp_clf(data, target):
 
     # Plotting decision boundaries in 2D
     if not config.grad:
-        plot_clfs(clfs, data, target, labels)
+        plot_clfs(clfs, X_test, y_test, X_train, y_train, labels)
     else:
         raise Exception("Check your gradient settings")
 
@@ -55,7 +48,10 @@ def pred_results(clf, X_test, y_test, label):
     plt.show()
 
 
-def plot_clfs(clfs, data, target, labels):
+def plot_clfs(clfs, X_test, y_test, X_train, y_train, labels):
+    data = np.concatenate((X_train, X_test), axis=0)
+    target = np.concatenate((y_train, y_test), axis=0)
+
     gs = gridspec.GridSpec(2, 2)
 
     plt.figure(figsize=(10, 8))

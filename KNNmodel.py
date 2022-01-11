@@ -1,6 +1,5 @@
 from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
@@ -14,13 +13,7 @@ from sklearn.decomposition import PCA
 n_neighbors = 15
 
 
-def kNN(data, target):
-    data = np.concatenate(data, axis=0)
-    target = np.concatenate(target, axis=0)
-
-    # Load and split data
-    X_train, X_test, y_train, y_test = train_test_split(
-        data, target, test_size=0.1, random_state=42, shuffle=False)
+def kNN(X_test, y_test, X_val, y_val, X_train, y_train):
 
     """
     # Transform 3D data into 2D with help of PCA (Principal Component Analysis)

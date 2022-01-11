@@ -1,12 +1,11 @@
 # Simple NN
 import torch
-import numpy as np
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from torch import nn, optim
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 import sys
+import os
 
 import config
 
@@ -58,14 +57,7 @@ def loss_plot(train, test):
     plt.show()
 
 
-def neuralnetwork(data, target):
-
-    # data
-    data = np.concatenate(data, axis=0 )
-    target = np.concatenate(target, axis=0 )
-
-    X_train, X_test, y_train, y_test = train_test_split(data, target, random_state=config.random_state, shuffle=True, test_size=1 - config.train_ratio)
-    X_val, X_test, y_val, y_test = train_test_split(X_test, y_test, test_size=config.test_ratio / (config.test_ratio + config.validation_ratio))
+def neuralnetwork(X_test, y_test, X_val, y_val, X_train, y_train):
 
     X_train = torch.from_numpy(X_train).float()
     y_train = torch.squeeze(torch.from_numpy(y_train).float())
@@ -116,6 +108,9 @@ def neuralnetwork(data, target):
                 if epoch % (config.epoch_number/10) == 0:
                     loss_plot(train, val)
 
+            optimizer.zero_grad()
+            train_loss.backward()
+            optimizer.step()
 
             if epoch % 100 == 0:
 
@@ -127,11 +122,17 @@ def neuralnetwork(data, target):
                 Val  set  - loss: {round_tensor(val_loss)}, accuracy: {round_tensor(val_acc)}
                 ''')
 
-            optimizer.zero_grad()
-            train_loss.backward()
-            optimizer.step()
+            # Simple help against local minima.
+            if epoch % 100 == 0 and epoch >= 3000 and round_tensor(train_acc) <= 0.94:
+                print("Local minimum detected. Reset weights for optimal outcome.")
+                os.system(config.link)
 
-        MODEL_PATH = 'model.pth'
+            # Early stopping (way more sophisticated versions available in PyTorch and TensorFlow)
+            if epoch % 100 == 0 and round_tensor(train_acc) >= 0.99 and round_tensor(val_acc) >= 0.99:
+                break
+
+
+        MODEL_PATH = 'model_split'+str(config.split)+'.pth'
         torch.save(net, MODEL_PATH)
 
         # testing (of trained model)
@@ -141,14 +142,14 @@ def neuralnetwork(data, target):
         y_test = y_test.cpu()
 
         if config.report == True:
-            sys.stdout = open("classification_report.txt", "w")
+            sys.stdout = open("classification_report_split"+str(config.split)+".txt", "w")
             print(classification_report(y_test, y_pred, target_names=classes))
             sys.stdout.close()
         else:
             print(classification_report(y_test, y_pred, target_names=classes))
 
     else:
-        net = torch.load('model.pth')
+        net = torch.load('model_split'+str(config.split)+'.pth')
 
         classes = ['No Optimum', 'Optimum PEEP']
         y_pred = net(X_test)

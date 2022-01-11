@@ -38,7 +38,7 @@ Dataloading consists of 4 basic steps.
 
 ## Neural Network (SimpleNN.py)
 
-The network can be called via the function neuralnetwork(data, target) and forms a self-contained programme sequence for calculation. 
+The network can be called via the function neuralnetwork() and forms a self-contained programme sequence for calculation. 
 Only the data must be handed over and all necessary preferences must be determined in config.py. The function maps the 
 entire life cycle. The data is divided (train, val, test), the training is carried out and evaluated, and the network is evaluated.
 Layers and knots can be changed as desired, but are sensibly chosen in this version. Furthermore, all weights of the 

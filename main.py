@@ -11,21 +11,21 @@ from Compare_ML_Classifiers import comp_clf
 def main():
 
     # load data
-    data_list, target_list = loader()
+    X_test, y_test, X_val, y_val, X_train, y_train = loader()
 
     # use data
     if config.compare == True:
-        comp_clf(data_list, target_list)
+        comp_clf(X_test, y_test, X_val, y_val, X_train, y_train)
         return
 
     if config.model == "SimpleNN":
-        neuralnetwork(data_list, target_list)
+        neuralnetwork(X_test, y_test, X_val, y_val, X_train, y_train)
     elif config.model == "Philip":
-        neuralnetwork(data_list, target_list)
+        neuralnetwork(X_test, y_test, X_val, y_val, X_train, y_train)
     elif config.model == "SVM":
-        svm(data_list, target_list)
+        svm(X_test, y_test, X_val, y_val, X_train, y_train)
     elif config.model == "kNN":
-        kNN(data_list, target_list)
+        kNN(X_test, y_test, X_val, y_val, X_train, y_train)
     else:
         raise Exception("Wrong model")
 

@@ -134,4 +134,64 @@ def loader():
             #plt.savefig('plot'+str(i+1)+'.png') if you want to save the plots
             plt.show()
 
-    return data_list, target_list
+    if config.split == 1:
+        X_test = data_list[0:4]
+        y_test = target_list[0:4]
+        X_val = data_list[4:8]
+        y_val = target_list[4:8]
+        X_train = data_list[8:28]
+        y_train = target_list[8:28]
+    elif config.split == 2:
+        X_test = data_list[4:8]
+        y_test = target_list[4:8]
+        X_val = data_list[8:12]
+        y_val = target_list[8:12]
+        X_train = data_list[0:4]+data_list[12:28]
+        y_train = target_list[0:4]+target_list[12:28]
+    elif config.split == 3:
+        X_test = data_list[8:12]
+        y_test = target_list[8:12]
+        X_val = data_list[12:16]
+        y_val = target_list[12:16]
+        X_train = data_list[0:8]+data_list[16:28]
+        y_train = target_list[0:8]+target_list[16:28]
+    elif config.split == 4:
+        X_test = data_list[12:16]
+        y_test = target_list[12:16]
+        X_val = data_list[16:20]
+        y_val = target_list[16:20]
+        X_train = data_list[0:12]+data_list[20:28]
+        y_train = target_list[0:12]+target_list[20:28]
+    elif config.split == 5:
+        X_test = data_list[16:20]
+        y_test = target_list[16:20]
+        X_val = data_list[20:24]
+        y_val = target_list[20:24]
+        X_train = data_list[0:16]+data_list[24:28]
+        y_train = target_list[0:16]+target_list[24:28]
+    elif config.split == 6:
+        X_test = data_list[20:24]
+        y_test = target_list[20:24]
+        X_val = data_list[24:28]
+        y_val = target_list[24:28]
+        X_train = data_list[0:20]
+        y_train = target_list[0:20]
+    elif config.split == 7:
+        X_test = data_list[24:28]
+        y_test = target_list[24:28]
+        X_val = data_list[0:4]
+        y_val = target_list[0:4]
+        X_train = data_list[4:24]
+        y_train = target_list[4:24]
+    else:
+        raise Exception("Choose a number between 1-7 for the split")
+
+    # data_list to numpy
+    X_test = np.concatenate(X_test, axis=0 )
+    y_test = np.concatenate(y_test, axis=0 )
+    X_val = np.concatenate(X_val, axis=0 )
+    y_val = np.concatenate(y_val, axis=0 )
+    X_train = np.concatenate(X_train, axis=0 )
+    y_train = np.concatenate(y_train, axis=0 )
+
+    return X_test, y_test, X_val, y_val, X_train, y_train

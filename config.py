@@ -1,21 +1,24 @@
 # Define configs here
+import os
 
 # System
 
 model = "SimpleNN"      #SimpleNN, Philip, kNN, SVM
 
-train_ratio = 0.8       # must add up to 1.0
-validation_ratio = 0.1
-test_ratio = 0.1
-
 epoch_number = (3000 * 10) # number must be  X % 10 = 0
 
 learning_rate = 0.01
 
-# IMPORTANT: Activate to test saved model "model.pth" --> no training of network (-> Attention for data)
-# If False, one also test the trained model (one just calculated)
-# Only test models, if random state is set (42) for training the saved model, otherwise data-split issues will occur
-random_state = False #42
+# define where the main program is saved
+link = "C:/Users/"+str(os.getlogin())+"/PycharmProjects/AutoPEEPTitration/main.py"
+
+# Cross-Validation: Choose between 7 different splits (Training/Test/Validation)
+# With all 7 splits every data-set is used for testing (exactly 1 time)
+split = 1 # Choose a number between 1-7
+
+
+# IMPORTANT: Only test your network with the same split used for training (otherwise an error will occur)
+# (if False, the test with the correct split is executed automatically)
 test = False
 
 #----------------------------------------------------#
@@ -31,6 +34,6 @@ print = False
 # plot curve of loss (--> overfitting)
 loss_plot = False
 # save classification report as text file
-report = False
+report = True
 # compare ML models with each other
 compare = False

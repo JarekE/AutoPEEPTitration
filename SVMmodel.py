@@ -1,6 +1,5 @@
 import numpy as np
 from sklearn.svm import SVC, LinearSVC
-from sklearn.model_selection import train_test_split
 from sklearn import metrics
 from matplotlib import pyplot as plt
 import config
@@ -127,7 +126,7 @@ def plot_rbf(X_train, y_train, X_test, y_test, data):
     print(metrics.classification_report(y_test, y_pred))
 
 
-def plot_rbf2(X_train, y_train, X_test, y_test, data):
+def plot_rbf2(X_train, y_train, X_test, y_test):
     # Create the SVM
     svm = SVC(random_state=42, kernel='rbf', gamma=1)
 
@@ -172,7 +171,7 @@ def plot_3D_data(X_train, y_train, X_test, y_test, data):
     plt.show()
 
 
-def rbf_3D(X_train, y_train, X_test, y_test, data):
+def rbf_3D(X_train, y_train, X_test, y_test):
     fig = plt.figure()
     ax = plt.axes(projection="3d")
 
@@ -229,17 +228,13 @@ def rbf_3D(X_train, y_train, X_test, y_test, data):
     plt.show()
 
 
-def svm(data, target):
-    data = np.concatenate(data, axis=0)
-    target = np.concatenate(target, axis=0)
-
-    X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=42)
+def svm(X_test, y_test, X_val, y_val, X_train, y_train):
 
     if config.grad:
         # plot_3D_data(X_train, y_train, X_test, y_test, data)
-        rbf_3D(X_train, y_train, X_test, y_test, data)
+        rbf_3D(X_train, y_train, X_test, y_test)
     else:
-        plot_rbf(X_train, y_train, X_test, y_test, data)
+        plot_rbf(X_train, y_train, X_test, y_test)
         # plot_different_SVCs(X_train, y_train)
         # plot_rbf2(X_train, y_train, X_test, y_test, data)
         # plot_linear(X_train, y_train, X_test, y_test, data, target)
