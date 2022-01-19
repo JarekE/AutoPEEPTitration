@@ -1,9 +1,0 @@
-              precision    recall  f1-score   support
-
-  No Optimum       0.99      1.00      1.00       454
-Optimum PEEP       0.98      0.95      0.96        58
-
-    accuracy                           0.99       512
-   macro avg       0.99      0.97      0.98       512
-weighted avg       0.99      0.99      0.99       512
-
