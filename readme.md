@@ -21,9 +21,14 @@ Among others, the following libraries were used:
 ## (main.py) structure
 
 All parts of the programme can be started by executing main.py. To use individual networks or ML algorithms, these must 
-be set in config.py. All other settings (data used, splits, plots, hyperparameters etc.) can also be set there. No settings 
-should be made elsewhere in the code. All parameters to be set are explained briefly in config.py. Furthermore, all 
-important functions are briefly described and/or meaningfully named.
+be set in config.py.
+
+## config.py
+
+All settings (data used, splits, plots, hyperparameters etc.) can be set there. 
+-- No settings should be made elsewhere in the code. --
+All parameters to be set are explained briefly in config.py. Furthermore, all important functions are briefly 
+described and/or meaningfully named.
 
 ## Dataloader.py
 
@@ -42,9 +47,8 @@ The network can be called via the function neuralnetwork() and forms a self-cont
 Only the data must be handed over and all necessary preferences must be determined in config.py. The function maps the 
 entire life cycle. The data is divided (train, val, test), the training is carried out and evaluated, and the network is evaluated.
 Layers and knots can be changed as desired, but are sensibly chosen in this version. Furthermore, all weights of the 
-network are saved in the file model.pth after successful training in order to be able to access them again later. 
-This makes it possible to evaluate and use the network externally. If requested, the results can be saved externally in 
-a file (classification_report.txt).
+network are saved in the file model_splitX.pth after successful training in order to be able to access them again later. 
+This makes it possible to evaluate and use the network externally.
 
 ## Machine Learning approaches
 
@@ -55,12 +59,10 @@ were realised for the kNN and SVM approaches (KNNmodel.py, SVMmodel.py).
 
 ## Output
 
-model.pth  
-Saved version of the calculated weights of the network. Can be used for further tests outside this programme or loaded 
-again for testing via config.py.
+model_splitX.pth  
+Saved version of the calculated weights of the neural network. Can be used for further tests outside this programme or loaded 
+again for testing via config.py. X is the number of split.
 
-classification_report.txt  
-Results of the network. Saved text file with the focus on the F1 score.
 
 Plots  
 Various different plots of the data and results are possible through simple settings in config.py. These include loss 

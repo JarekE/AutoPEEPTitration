@@ -1,11 +1,10 @@
 # Simple NN
 import torch
-from sklearn.metrics import classification_report
 from torch import nn, optim
-import torch.nn.functional as F
 import matplotlib.pyplot as plt
 import sys
 import os
+from torchmetrics import Accuracy
 
 import config
 
@@ -14,30 +13,38 @@ class Net(nn.Module):
 
   def __init__(self, n_features):
     super(Net, self).__init__()
+
     # Network
     if config.model == "SimpleNN":
-        self.fc1 = nn.Linear(n_features, 6)
-        self.fc2 = nn.Linear(6, 3)
-        self.fc3 = nn.Linear(3, 1)
+        self.layers = nn.Sequential(
+            nn.Linear(n_features, 4),
+            #nn.Dropout(p=0.5),
+            nn.ReLU(),
+            nn.Linear(4,6),
+            #nn.Dropout(p=0.5),
+            nn.ReLU(),
+            nn.Linear(6, 8),
+            #nn.Dropout(p=0.5),
+            nn.ReLU(),
+            nn.Linear(8, 10),
+            #nn.Dropout(p=0.5),
+            nn.ReLU(),
+            nn.Linear(10,12))
+        self.fc1 = nn.Linear(12,2)
 
     # PhilipNetwork
     if config.model == "Philip":
-        self.fc1 = nn.Linear(n_features, 1)
+        self.fc1 = nn.Linear(n_features, 2)
 
 
   def forward(self, x):
     if config.model == "SimpleNN":
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        return torch.sigmoid(self.fc3(x))
+        x = self.layers(x)
+        return torch.sigmoid(self.fc1(x))
+        #return x
 
     if config.model == "Philip":
         return torch.sigmoid(self.fc1(x))
-
-
-def calculate_accuracy(y_true, y_pred):
-  predicted = y_pred.ge(.5).view(-1)
-  return (y_true == predicted).sum().float() / len(y_true)
 
 
 def round_tensor(t, decimal_places=3):
@@ -84,11 +91,15 @@ def neuralnetwork(X_test, y_test, X_val, y_val, X_train, y_train):
     criterion = nn.BCELoss()
     optimizer = optim.Adam(net.parameters(), lr=config.learning_rate)
 
+    # Metrics
+    acc = Accuracy()
 
     if config.test == False:
         # training
         train = []
         val = []
+        min_val = 1
+
         for epoch in range(config.epoch_number):
 
             # training
@@ -112,50 +123,45 @@ def neuralnetwork(X_test, y_test, X_val, y_val, X_train, y_train):
             train_loss.backward()
             optimizer.step()
 
-            if epoch % 100 == 0:
+            train_acc = acc(y_pred, y_train.int())
+            val_acc = acc(y_val_pred, y_val.int())
 
-                train_acc = calculate_accuracy(y_train, y_pred)
-                val_acc = calculate_accuracy(y_val, y_val_pred)
+            # Save the best model
+            if round_tensor(val_loss) < min_val:
+
+                MODEL_PATH = 'model_split' + str(config.split) + '.pth'
+                torch.save(net, MODEL_PATH)
+
+                min_val = round_tensor(val_loss)
+
+            # Output
+            if epoch % 100 == 0:
 
                 print(f'''epoch {epoch}
                 Train set - loss: {round_tensor(train_loss)}, accuracy: {round_tensor(train_acc)}
                 Val  set  - loss: {round_tensor(val_loss)}, accuracy: {round_tensor(val_acc)}
                 ''')
 
-            # Simple help against local minima.
-            if epoch % 100 == 0 and epoch >= 3000 and round_tensor(train_acc) <= 0.94:
+            # Simple help against local minima
+            if epoch % 100 == 0 and epoch >= 10000 and round_tensor(train_acc) <= 0.94:
                 print("Local minimum detected. Reset weights for optimal outcome.")
-                os.system(config.link)
+                os.system('python "main.py"')
 
-            # Early stopping (way more sophisticated versions available in PyTorch and TensorFlow)
-            if epoch % 100 == 0 and round_tensor(train_acc) >= 0.99 and round_tensor(val_acc) >= 0.99:
-                break
+        # testing (of best trained model)
+        net = torch.load('model_split' + str(config.split) + '.pth')
 
-
-        MODEL_PATH = 'model_split'+str(config.split)+'.pth'
-        torch.save(net, MODEL_PATH)
-
-        # testing (of trained model)
-        classes = ['No Optimum', 'Optimum PEEP']
-        y_pred = net(X_test)
-        y_pred = y_pred.ge(.5).view(-1).cpu()
-        y_test = y_test.cpu()
-
-        if config.report == True:
-            sys.stdout = open("classification_report_split"+str(config.split)+".txt", "w")
-            print(classification_report(y_test, y_pred, target_names=classes))
-            sys.stdout.close()
-        else:
-            print(classification_report(y_test, y_pred, target_names=classes))
+        y_pred_test = net(X_test)
+        y_pred_test = torch.squeeze(y_pred_test)
+        test_acc = acc(y_pred_test, y_test.int())
+        print(f'''Test set - accuracy: {round_tensor(test_acc)}''')
 
     else:
-        net = torch.load('model_split'+str(config.split)+'.pth')
 
-        classes = ['No Optimum', 'Optimum PEEP']
-        y_pred = net(X_test)
-        y_pred = y_pred.ge(.5).view(-1).cpu()
-        y_test = y_test.cpu()
+        net = torch.load('model_split' + str(config.split) + '.pth')
 
-        print(classification_report(y_test, y_pred, target_names=classes))
+        y_pred_test = net(X_test)
+        y_pred_test = torch.squeeze(y_pred_test)
+        test_acc = acc(y_pred_test, y_test.int())
+        print(f'''Test set - accuracy: {round_tensor(test_acc)}''')
 
     return

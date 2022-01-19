@@ -114,7 +114,6 @@ def data_3D(clf, data, target):
     ylim = ax.get_ylim()
     zlim = ax.get_zlim()
 
-    ### from here i don't know what to do ###
     xx = np.linspace(xlim[0], xlim[1], 50)
     yy = np.linspace(ylim[0], ylim[1], 50)
     zz = np.linspace(zlim[0], zlim[1], 50)

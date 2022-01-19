@@ -26,11 +26,7 @@ def create_data(set, name):
     # control variable
     name = name
 
-    # not in use at the moment
-    if config.model == "RNN":
-        data_set = set[["p_peep", "C_rs_est"]].to_numpy()
-        width = 2
-    elif config.model == "SimpleNN" or config.model == "Philip" or config.model == "kNN" or config.model == "SVM":
+    if config.model == "SimpleNN" or config.model == "Philip" or config.model == "kNN" or config.model == "SVM":
         #C_rs_est has to be the last datapoint! (--> gradient_c() )
         if config.compare == True or config.model == "SVM":
             data_set = set[["p_peep", "C_rs_est"]].to_numpy()
@@ -77,6 +73,8 @@ def create_data(set, name):
             #Now the gradient is the last datapoint
             data = np.concatenate((data, gradient_c(median_step)), axis=1)
 
+            #data = np.concatenate((np.expand_dims(data[:, 1], 1), np.expand_dims(data[:, 3], 1)), axis=1)
+
         if config.model == "Philip":
             if config.grad != True:
                 raise Exception("Turn On (True) the gradient in .config")
@@ -95,8 +93,16 @@ def target_vector(list, length, number):
     max_value = max(target_list)
     max_index = target_list.index(max_value)
 
+    # 1-hot-encoding of the maximum vector
     target = np.zeros((length*number, 1))
     target[(max_index*length):(max_index*length+length)] = np.ones((length, 1))
+
+    # 1-hot-encoding of the not-the-maximum vector
+    if config.model == "SimpleNN" or config.model == "Philip":
+        target2 = np.ones((length * number, 1))
+        target2[(max_index * length):(max_index * length + length)] = np.zeros((length, 1))
+
+        target = np.concatenate((target, target2), axis=1)
 
     return target
 
