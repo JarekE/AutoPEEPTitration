@@ -67,3 +67,12 @@ again for testing via config.py. X is the number of split.
 Plots  
 Various different plots of the data and results are possible through simple settings in config.py. These include loss 
 curves, data plots and results from ML approaches.
+
+classification_report_splitX.txt
+Report about the outcome. Used metrics: accuracy and f1 score.
+
+## Further Data
+
+In the folder '\Documents' one can find trained models for all splits and the calculated classification_reports.
+They can be used for testing (can be set in config, also save the model in same structure as main.py) or evaluating
+of the own scores.
