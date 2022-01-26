@@ -32,14 +32,14 @@ def create_data(set, name):
             data_set = set[["p_peep", "C_rs_est"]].to_numpy()
             width = 2
         else:
-            data_set = set[["p_peep", "C_rs_eve", "C_rs_est"]].to_numpy()
-            width = 3
+            data_set = set[["p_peep", "C_rs_est"]].to_numpy()
+            width = 2
 
         # since all stairs begin with peep = 24 --> can be generalized if necessary
         peep = 23
         list = []
 
-        # peep of the last step
+        # peep of the last step (with odd values)
         minimal_peep = round(sum(data_set[-10:-1, 0]/9))
         if minimal_peep == 7:
             minimal_peep = 6
@@ -73,7 +73,19 @@ def create_data(set, name):
             #Now the gradient is the last datapoint
             data = np.concatenate((data, gradient_c(median_step)), axis=1)
 
-            #data = np.concatenate((np.expand_dims(data[:, 1], 1), np.expand_dims(data[:, 3], 1)), axis=1)
+            if config.no_peep:
+                data = data[:, 1:width+1]
+
+        if config.equal_size:
+            # find data points with maximal compliance -> 1 in target vector
+            index = np.where(target == 1)
+            max_compliance_data = np.take(data, index[0], axis=0)
+            one_vector = np.take(target, index[0], axis=0)
+
+            # add this data to the vector until we reach a equal number of 1 and 0 in the target vector
+            for x in range(number_of_steps-2):
+                data = np.append(data, max_compliance_data, axis = 0)
+                target = np.append(target, one_vector, axis = 0)
 
         if config.model == "Philip":
             if config.grad != True:
@@ -98,11 +110,13 @@ def target_vector(list, length, number):
     target[(max_index*length):(max_index*length+length)] = np.ones((length, 1))
 
     # 1-hot-encoding of the not-the-maximum vector
+    """
     if config.model == "SimpleNN" or config.model == "Philip":
         target2 = np.ones((length * number, 1))
         target2[(max_index * length):(max_index * length + length)] = np.zeros((length, 1))
 
         target = np.concatenate((target, target2), axis=1)
+    """
 
     return target
 

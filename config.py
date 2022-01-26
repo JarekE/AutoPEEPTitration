@@ -1,9 +1,8 @@
 # Define configs here
-import os
 
 # System
 
-model = "SimpleNN"      #Simple, Philip, kNN, SVM
+model = "SimpleNN"      #SimpleNN, Philip, kNN, SVM
 
 epoch_number = (3000 * 10) # number must be  X % 10 = 0
 
@@ -11,12 +10,18 @@ learning_rate = 0.001
 
 # Cross-Validation: Choose between 7 different splits (Training/Test/Validation)
 # With all 7 splits every data-set is used for testing (exactly 1 time)
-split = 4 # Choose a number between 1-7
+split = 3 # Choose a number between 1-7
 
 
 # IMPORTANT: Only test your network with the same split used for training (otherwise an error will occur)
 # (if False, the test with the correct split is executed automatically)
 test = False
+
+# Calculates the data with 50:50 optimal peep step and not optimal peep step values by
+# adding copies of the optimal peep step values at the end of the vector
+# (Idea: Since the optimal-peep-step-data-points are only 10-12% of the data, the network tends to learn weights to calculate
+# only not-optimal-peep-steps, which leads to a accuracy of up ~90%)
+equal_size = False
 
 #----------------------------------------------------#
 
@@ -32,3 +37,7 @@ print = False
 loss_plot = False
 # compare ML models with each other
 compare = False
+# Do not use the peep to train the neural network (we recommend this setting to be True)
+no_peep = True
+# Save the trainings report
+report = True
